@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Baseball Catch — AR Interactive</title>
+  <style>@font-face { font-family: 'Arial Nova'; src: local('Arial Nova'), local('ArialNova'), local('Arial'); }</style>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="device" id="device">
+    <!-- 1 Lock + notification -->
+    <section class="screen screen-lock active" id="screen-lock" aria-label="Lock screen">
+      <!-- iOS status bar -->
+      <div class="ios-status">
+        <span class="ios-status-carrier">ROGERS</span>
+        <div class="dynamic-island" aria-hidden="true">
+          <svg class="island-lock" width="8" height="10" viewBox="0 0 10 12" fill="none" aria-label="Locked">
+            <rect x="0.5" y="4.5" width="9" height="7" rx="2" fill="rgba(255,255,255,0.9)"/>
+            <path d="M2.8 4.5V3.2a2.2 2.2 0 014.4 0V4.5" stroke="rgba(255,255,255,0.9)" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="ios-status-right">
+          <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0" y="3" width="3" height="9" rx="1" fill="rgba(255,255,255,0.95)"/><rect x="4.5" y="2" width="3" height="10" rx="1" fill="rgba(255,255,255,0.95)"/><rect x="9" y="0" width="3" height="12" rx="1" fill="rgba(255,255,255,0.95)"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="rgba(255,255,255,0.35)"/></svg>
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M1.5 4.5C4.5 1.5 11.5 1.5 14.5 4.5" stroke="rgba(255,255,255,0.95)" stroke-width="1.5" stroke-linecap="round"/><path d="M4 7C5.8 5.5 10.2 5.5 12 7" stroke="rgba(255,255,255,0.95)" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="10" r="1.5" fill="rgba(255,255,255,0.95)"/></svg>
+          <div class="ios-battery"><div class="ios-battery-fill"></div></div>
+        </div>
+      </div>
+
+      <div class="lock-body">
+        <p class="lock-date">Tuesday, September 8</p>
+        <p class="lock-time glass-text">20:30</p>
+
+        <div class="lock-spacer"></div>
+
+        <!-- Notification -->
+        <button type="button" class="notif glass-card" id="btn-open-notif" aria-label="Open AR game from notification">
+          <div class="notif-top">
+            <div class="notif-icon-img" aria-hidden="true">
+              <img src="assets/images/unnamed.png" alt="" class="notif-app-img" />
+            </div>
+            <div class="notif-header">
+              <span class="notif-app">BALLPARK</span>
+              <span class="notif-when">now</span>
+            </div>
+          </div>
+          <p class="notif-body">🎉 It's game time—on and off the field!<br>Jump into our AR Charity Game now and play to make a difference 💙</p>
+        </button>
+
+        <p class="lock-hint">Tap notification to play</p>
+
+        <!-- Bottom shortcuts -->
+        <div class="lock-bottom">
+          <div class="lock-shortcut glass-circle" aria-label="Flashlight">
+            <svg width="13" height="24" viewBox="0 0 13 24" fill="none">
+              <!-- Wide flat head -->
+              <rect x="1" y="1" width="11" height="5" rx="1.5" fill="rgba(255,255,255,0.15)" stroke="#fff" stroke-width="1.2"/>
+              <!-- Taper from head to body -->
+              <path d="M2 6L4 10H9L11 6" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/>
+              <!-- Narrow cylindrical body -->
+              <rect x="4" y="10" width="5" height="12" rx="1" stroke="#fff" stroke-width="1.2"/>
+              <!-- Lens/bulb at top center -->
+              <circle cx="6.5" cy="3.5" r="1.5" fill="#fff" opacity="0.85"/>
+            </svg>
+          </div>
+          <div class="lock-indicator" aria-hidden="true"></div>
+          <div class="lock-shortcut glass-circle" aria-label="Camera">
+            <svg width="22" height="18" viewBox="0 0 22 18" fill="none">
+              <rect x="1" y="4.5" width="20" height="12.5" rx="2.5" stroke="#fff" stroke-width="1.4"/>
+              <path d="M7.5 4.5L9 1.5h4l1.5 3" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/>
+              <circle cx="11" cy="11" r="3.2" stroke="#fff" stroke-width="1.4"/>
+              <circle cx="11" cy="11" r="1.4" fill="rgba(255,255,255,0.6)"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 Gameplay -->
+    <section class="screen screen-game" id="screen-game" aria-label="Baseball Catch game">
+      <video class="ar-video" id="ar-video" playsinline muted loop aria-hidden="true"></video>
+      <div class="ar-fallback" id="ar-fallback" aria-hidden="true"></div>
+      <div class="ar-overlay"></div>
+
+      <div class="game-island">
+        <div class="dynamic-island" aria-hidden="true"></div>
+      </div>
+
+      <header class="game-header">
+        <div class="game-header-spacer"></div>
+        <h1 class="game-title">Baseball Catch</h1>
+        <div class="sponsor-row">
+          <div class="sponsor-item">
+            <span class="sponsor-label">IN SUPPORT OF</span>
+            <img src="assets/images/SickKids.png" alt="SickKids" class="sponsor-logo sponsor-logo-sickkids" />
+          </div>
+          <div class="sponsor-divider"></div>
+          <div class="sponsor-item">
+            <span class="sponsor-label">Sponsored by</span>
+            <img src="assets/images/TD_Bank_logo_PNG1.png" alt="TD" class="sponsor-logo sponsor-logo-td" />
+          </div>
+        </div>
+        <div class="game-stats">
+          <span class="stat-money" id="stat-money">$0.00</span>
+          <span class="stat-time" id="stat-time">0:59</span>
+        </div>
+      </header>
+
+      <div class="tap-hint-overlay" id="tap-hint-overlay">
+        <p class="tap-hint-center" id="tap-hint">Tap to catch!</p>
+      </div>
+
+      <div class="playfield" id="playfield" role="application" aria-label="Tap baseballs to catch">
+        <!-- baseballs injected by JS -->
+      </div>
+
+      <nav class="bottom-nav nav-new" aria-label="Main navigation">
+        <div class="nav-bg"><svg viewBox="0 0 390 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 0 L145 0 C150 0 154 0 157 5 C163 16 175 38 195 38 C215 38 227 16 233 5 C236 0 240 0 245 0 L390 0 L390 80 L0 80 Z" fill="#144A8E"/></svg></div>
+        <button type="button" class="nav-btn" data-nav="home" aria-label="Home">
+          <svg class="nav-svg" viewBox="0 0 24 24" fill="none"><path d="M4 4h16v8l-8 9-8-9V4z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+          <span>Home</span>
+        </button>
+        <button type="button" class="nav-btn" data-nav="tickets" aria-label="Tickets">
+          <svg class="nav-svg" viewBox="0 0 24 24" fill="none"><g transform="rotate(90 12 12)"><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v3a2 2 0 100 4v3a2 2 0 01-2 2H5a2 2 0 01-2-2v-3a2 2 0 100-4V7z" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="7" x2="12" y2="17" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 2"/></g></svg>
+          <span>Tickets</span>
+        </button>
+        <div class="nav-center-well">
+          <img src="assets/images/toronto_blue_jays_logo_primary_20208446.png" alt="Blue Jays" class="nav-team-logo" />
+        </div>
+        <button type="button" class="nav-btn" data-nav="order" aria-label="Order">
+          <svg class="nav-svg" viewBox="0 0 24 24" fill="none"><path d="M12 22L4 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M12 22L20 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M4 6a12 12 0 0116 0" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/><line x1="7" y1="11" x2="17" y2="11" stroke="currentColor" stroke-width="1.2" opacity="0.5"/><circle cx="10" cy="8" r="1.1" stroke="currentColor" stroke-width="1" fill="none"/><circle cx="14" cy="9" r="0.9" stroke="currentColor" stroke-width="1" fill="none"/><circle cx="12" cy="15" r="0.8" stroke="currentColor" stroke-width="1" fill="none"/></svg>
+          <span>Order</span>
+        </button>
+        <button type="button" class="nav-btn" data-nav="profile" aria-label="Profile">
+          <svg class="nav-svg" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 21c0-3.3 3.6-6 8-6s8 2.7 8 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span>Profile</span>
+        </button>
+      </nav>
+    </section>
+
+    <!-- 3 Game finished -->
+    <section class="screen screen-done" id="screen-done" aria-label="Game finished">
+      <div class="status-bar">
+        <span>20:31</span>
+        <span></span>
+        <span>100%</span>
+      </div>
+      <div class="done-body">
+        <h2 class="done-title">Game Finished</h2>
+        <p class="done-msg">
+          Woohoo! Thank you for playing and supporting SickKids. Together we have raised <strong>$9345</strong>!
+        </p>
+        <p class="done-you" id="done-you"></p>
+        <button type="button" class="btn-continue" id="btn-continue">Close</button>
+      </div>
+      <nav class="bottom-nav bottom-nav-static nav-new" aria-label="Main navigation">
+        <div class="nav-bg"><svg viewBox="0 0 390 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 0 L145 0 C150 0 154 0 157 5 C163 16 175 38 195 38 C215 38 227 16 233 5 C236 0 240 0 245 0 L390 0 L390 80 L0 80 Z" fill="#144A8E"/></svg></div>
+        <button type="button" class="nav-btn" data-nav="home" aria-label="Home">
+          <svg class="nav-svg" viewBox="0 0 24 24" fill="none"><path d="M4 4h16v8l-8 9-8-9V4z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+          <span>Home</span>
+        </button>
+        <button type="button" class="nav-btn" data-nav="tickets" aria-label="Tickets">
+          <svg class="nav-svg" viewBox="0 0 24 24" fill="none"><g transform="rotate(90 12 12)"><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v3a2 2 0 100 4v3a2 2 0 01-2 2H5a2 2 0 01-2-2v-3a2 2 0 100-4V7z" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="7" x2="12" y2="17" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 2"/></g></svg>
+          <span>Tickets</span>
+        </button>
+        <div class="nav-center-well">
+          <img src="assets/images/toronto_blue_jays_logo_primary_20208446.png" alt="Blue Jays" class="nav-team-logo" />
+        </div>
+        <button type="button" class="nav-btn" data-nav="order" aria-label="Order">
+          <svg class="nav-svg" viewBox="0 0 24 24" fill="none"><path d="M12 22L4 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M12 22L20 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M4 6a12 12 0 0116 0" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/><line x1="7" y1="11" x2="17" y2="11" stroke="currentColor" stroke-width="1.2" opacity="0.5"/><circle cx="10" cy="8" r="1.1" stroke="currentColor" stroke-width="1" fill="none"/><circle cx="14" cy="9" r="0.9" stroke="currentColor" stroke-width="1" fill="none"/><circle cx="12" cy="15" r="0.8" stroke="currentColor" stroke-width="1" fill="none"/></svg>
+          <span>Order</span>
+        </button>
+        <button type="button" class="nav-btn" data-nav="profile" aria-label="Profile">
+          <svg class="nav-svg" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 21c0-3.3 3.6-6 8-6s8 2.7 8 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span>Profile</span>
+        </button>
+      </nav>
+    </section>
+
+    <!-- 4 Home screen (styled to match Ballpark hi-fi; shown only after Close on game finished) -->
+    <section class="screen screen-home" id="screen-home" aria-label="Ballpark home">
+      <div class="home-root">
+        <div class="home-scroll-main">
+          <header class="home-hero">
+            <img src="assets/images/alg_4943-1.jpeg" alt="" class="home-hero-img" width="390" height="280" />
+            <div class="home-hero-fade" aria-hidden="true"></div>
+            <div class="home-hero-ui">
+              <div class="home-top-row">
+                <button type="button" class="home-pill-btn" aria-label="Mail">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6.5h16c.83 0 1.5.67 1.5 1.5v8.5c0 .83-.67 1.5-1.5 1.5H4A1.5 1.5 0 012.5 16.5V8c0-.83.67-1.5 1.5-1.5z" stroke="#004A8D" stroke-width="1.6"/><path d="M3 8l8.2 5.6a1.5 1.5 0 001.6 0L21 8" stroke="#004A8D" stroke-width="1.6" stroke-linecap="round"/></svg>
+                </button>
+                <button type="button" class="home-pill-btn" aria-label="Chat">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 01-1.4-4.8 8.5 8.5 0 018.5-8.5 8.38 8.38 0 013.8.9" stroke="#004A8D" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.5 10.5h7M8.5 13.5h4" stroke="#004A8D" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </button>
+              </div>
+              <div class="home-brand-hero-center">
+                <img src="assets/images/Screenshot%202026-03-25%20at%203.34.png" alt="Ballpark" class="home-mlb-logo" width="180" height="62" />
+              </div>
+            </div>
+          </header>
+
+          <div class="home-ticket-wrap">
+            <div class="home-greetings">
+              <p class="home-greeting">Good Evening, Trevor!</p>
+            </div>
+            <div class="home-ticket-card">
+              <div class="home-ticket-punch home-ticket-punch-left" aria-hidden="true"></div>
+              <div class="home-ticket-punch home-ticket-punch-right" aria-hidden="true"></div>
+              <div class="home-ticket-perf" aria-hidden="true"></div>
+              <img src="assets/images/toronto_blue_jays_logo_primary_20208446.png" alt="" class="home-ticket-watermark" width="200" height="200" />
+              <div class="home-ticket-inner">
+                <p class="home-ticket-status">Authorized</p>
+                <p class="home-ticket-date">Tuesday, September 8, 2026</p>
+                <h2 class="home-ticket-matchup">
+                  <span class="home-mu-a">Yankees</span>
+                  <span class="home-mu-at">@</span>
+                  <span class="home-mu-b">Blue Jays</span>
+                </h2>
+                <p class="home-ticket-venue">Rogers Centre</p>
+                <p class="home-ticket-time">First pitch 7:07 pm ET</p>
+              </div>
+              <button type="button" class="home-ticket-chevron" aria-label="View ticket">
+                <svg width="8" height="14" viewBox="0 0 8 14" fill="none" aria-hidden="true"><path d="M1 1l5 6-5 6" stroke="#004A8D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="home-body">
+            <h3 class="home-section-title">What To Expect Today</h3>
+            <div class="home-cards-scroll">
+              <article class="home-expect-card">
+                <div class="home-expect-head">
+                  <svg class="home-expect-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 3L3 5.2v15.3l6-2.2 6 2.2 6-2.2V3l-6 2.2L9 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 3v15.3M15 5.2v15.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                  <span>Stadium Offers</span>
+                </div>
+                <div class="home-expect-body">
+                  Enjoy 10% off at Right Field Market at Section 113 near you!
+                </div>
+              </article>
+              <article class="home-expect-card">
+                <div class="home-expect-head">
+                  <svg class="home-expect-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 10v5M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  <span>Today’s Activities</span>
+                </div>
+                <div class="home-expect-body">
+                  Join us for a charity AR Game after the 6th inning.
+                </div>
+              </article>
+            </div>
+
+            <h3 class="home-section-title home-up-title">Upcoming Games</h3>
+            <p class="home-section-sub">Rogers Centre</p>
+            <div class="home-upcoming-card">
+              <div class="home-upcoming-logo-left" aria-hidden="true">
+                <svg viewBox="0 0 56 56" width="40" height="40" xmlns="http://www.w3.org/2000/svg"><circle cx="28" cy="28" r="28" fill="#003831"/><text x="28" y="37" text-anchor="middle" fill="#efb21e" font-size="26" font-weight="700" font-family="Roboto, Arial, sans-serif">A</text></svg>
+              </div>
+              <div class="home-upcoming-mid">
+                <p class="home-upcoming-line1">
+                  <span class="home-up-t1">Athletics</span><span class="home-up-vs"> vs. </span><span class="home-up-t2">Blue Jays</span>
+                </p>
+                <p class="home-upcoming-line2">September 9 • 6:15 pm ET</p>
+                <p class="home-upcoming-line3">Rogers Centre</p>
+              </div>
+              <div class="home-upcoming-logos-right">
+                <svg viewBox="0 0 40 40" width="40" height="40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="#003831"/><text x="20" y="27" text-anchor="middle" fill="#efb21e" font-size="18" font-weight="700" font-family="Roboto, Arial, sans-serif">A</text></svg>
+                <img src="assets/images/toronto_blue_jays_logo_primary_20208446.png" alt="" class="home-up-jays-ico" width="40" height="40" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <nav class="bottom-nav bottom-nav-static nav-new home-app-nav" aria-label="Main navigation">
+          <div class="nav-bg"><svg viewBox="0 0 390 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 0 L145 0 C150 0 154 0 157 5 C163 16 175 38 195 38 C215 38 227 16 233 5 C236 0 240 0 245 0 L390 0 L390 80 L0 80 Z" fill="#002D62"/></svg></div>
+          <button type="button" class="nav-btn nav-btn-active" data-nav="home" aria-label="Home" aria-current="page">
+            <svg class="nav-svg" viewBox="0 0 24 24" fill="none"><path class="home-nav-home-fill" d="M4 4h16v8l-8 9-8-9V4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+            <span>Home</span>
+          </button>
+          <button type="button" class="nav-btn" data-nav="tickets" aria-label="Tickets">
+            <svg class="nav-svg" viewBox="0 0 24 24" fill="none"><g transform="rotate(90 12 12)"><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v3a2 2 0 100 4v3a2 2 0 01-2 2H5a2 2 0 01-2-2v-3a2 2 0 100-4V7z" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="7" x2="12" y2="17" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 2"/></g></svg>
+            <span>Tickets</span>
+          </button>
+          <div class="nav-center-well">
+            <img src="assets/images/toronto_blue_jays_logo_primary_20208446.png" alt="Blue Jays" class="nav-team-logo" width="40" height="40" />
+          </div>
+          <button type="button" class="nav-btn" data-nav="order" aria-label="Order">
+            <svg class="nav-svg" viewBox="0 0 24 24" fill="none"><path d="M12 22L4 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M12 22L20 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M4 6a12 12 0 0116 0" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/><line x1="7" y1="11" x2="17" y2="11" stroke="currentColor" stroke-width="1.2" opacity="0.5"/><circle cx="10" cy="8" r="1.1" stroke="currentColor" stroke-width="1" fill="none"/><circle cx="14" cy="9" r="0.9" stroke="currentColor" stroke-width="1" fill="none"/><circle cx="12" cy="15" r="0.8" stroke="currentColor" stroke-width="1" fill="none"/></svg>
+            <span>Order</span>
+          </button>
+          <button type="button" class="nav-btn" data-nav="profile" aria-label="Profile">
+            <svg class="nav-svg" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 21c0-3.3 3.6-6 8-6s8 2.7 8 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <span>Profile</span>
+          </button>
+        </nav>
+      </div>
+    </section>
+
+    <!-- Placeholder nav targets -->
+    <section class="screen screen-placeholder" id="screen-placeholder">
+      <div class="status-bar"><span>20:31</span><span></span><span>100%</span></div>
+      <header class="ph-header">
+        <button type="button" class="icon-back" id="ph-back" aria-label="Back">‹</button>
+        <span class="ph-title" id="ph-title">Ballpark</span>
+      </header>
+      <p class="ph-copy">This tab is a placeholder in the prototype.</p>
+    </section>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
